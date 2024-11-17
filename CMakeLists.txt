@@ -9,6 +9,14 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 option(BUILD_TESTS "build tests " OFF)
 
+# 简单起见, 当前仅使用 OpenSSL
+add_definitions(-DHAVE_OPENSSL)
+# FIXME: 当前支持 SSL 的代码有问题, 不能正常编译
+#add_definitions(-DSSL_SUPPORT)
+# 从原始编译参数提取出来的
+add_compile_options(--std=gnu99)
+add_definitions(-D_GNU_SOURCE)
+
 # The version number.
 set(UWSC_VERSION_MAJOR 3)
 set(UWSC_VERSION_MINOR 3)
