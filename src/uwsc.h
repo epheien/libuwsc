@@ -131,10 +131,12 @@ struct uwsc_client *uwsc_new(struct ev_loop *loop, const char *url,
 int uwsc_init(struct uwsc_client *cl, struct ev_loop *loop, const char *url,
     int ping_interval, const char *extra_header);
 
+#if 0
 #ifdef SSL_SUPPORT
 int uwsc_load_ca_crt_file(const char *file);
 int uwsc_load_crt_file(const char *file);
 int uwsc_load_key_file(const char *file);
+#endif
 #endif
 
 #ifdef __cplusplus

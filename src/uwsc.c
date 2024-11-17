@@ -357,12 +357,12 @@ static int ssl_negotiated(struct uwsc_client *cl)
     char err_buf[128];
     int ret;
 
-    ret = ssl_connect(cl->ssl, false, on_ssl_verify_error, NULL);
-    if (ret == SSL_PENDING)
+    ret = ssl_connect(cl->ssl, on_ssl_verify_error, NULL);
+    if (ret == SSL_WANT_READ || ret == SSL_WANT_WRITE)
         return 0;
 
     if (ret == SSL_ERROR) {
-        log_err("ssl connect error(%d): %s\n", ssl_err_code, ssl_strerror(ssl_err_code, err_buf, sizeof(err_buf)));
+        //log_err("ssl connect error(%d): %s\n", ssl_err_code, ssl_strerror(ssl_err_code, err_buf, sizeof(err_buf)));
         uwsc_error(cl, UWSC_ERROR_SSL_HANDSHAKE, err_buf);
         return -1;
     }
@@ -380,13 +380,13 @@ static int uwsc_ssl_read(int fd, void *buf, size_t count, void *arg)
 
     ret = ssl_read(cl->ssl, buf, count);
     if (ret == SSL_ERROR) {
-        log_err("ssl_read(%d): %s\n", ssl_err_code,
-                ssl_strerror(ssl_err_code, err_buf, sizeof(err_buf)));
+        //log_err("ssl_read(%d): %s\n", ssl_err_code,
+        //        ssl_strerror(ssl_err_code, err_buf, sizeof(err_buf)));
         uwsc_error(cl, UWSC_ERROR_IO, err_buf);
         return P_FD_ERR;
     }
 
-    if (ret == SSL_PENDING)
+    if (ret == SSL_WANT_READ || ret == SSL_WANT_WRITE)
         return P_FD_PENDING;
 
     return ret;
@@ -459,13 +459,13 @@ static void uwsc_io_write_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 
         ret = ssl_write(cl->ssl, buffer_data(b), buffer_length(b));
         if (ret == SSL_ERROR) {
-            log_err("ssl_write(%d): %s\n", ssl_err_code,
-                    ssl_strerror(ssl_err_code, err_buf, sizeof(err_buf)));
+            //log_err("ssl_write(%d): %s\n", ssl_err_code,
+            //        ssl_strerror(ssl_err_code, err_buf, sizeof(err_buf)));
             uwsc_error(cl, UWSC_ERROR_IO, err_buf);
             return;
         }
 
-        if (ret == SSL_PENDING)
+        if (ret == SSL_WANT_READ || ret == SSL_WANT_WRITE)
             return;
 
         buffer_pull(b, NULL, ret);
@@ -740,6 +740,7 @@ int uwsc_init(struct uwsc_client *cl, struct ev_loop *loop, const char *url,
     return 0;
 }
 
+#if 0
 #ifdef SSL_SUPPORT
 int uwsc_load_ca_crt_file(const char *file)
 {
@@ -761,4 +762,5 @@ int uwsc_load_key_file(const char *file)
 
     return ssl_load_key_file(ssl_ctx, file);
 }
+#endif
 #endif
