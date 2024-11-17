@@ -1,26 +1,77 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.15)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_VERBOSE_MAKEFILE ON) # 打印详细的编译命令
+add_compile_options(-Wall)
+add_compile_options(-g)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+option(BUILD_TESTS "build tests " OFF)
 
-project(libuwsc C)
+# The version number.
+set(UWSC_VERSION_MAJOR 3)
+set(UWSC_VERSION_MINOR 3)
+set(UWSC_VERSION_PATCH 5)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
+find_package(libev REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(spdlog REQUIRED)
 
-add_definitions(-D_GNU_SOURCE)
-add_compile_options(-O -Wall -Werror --std=gnu99)
+project(uwsc)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src SRCS)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/buffer SRCS)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/log SRCS)
+list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/ssl/openssl.c)
 
-option(BUILD_STATIC "Build static library" OFF)
+add_library(${PROJECT_NAME} STATIC ${SRCS})
+target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
 
-option(BUILD_EXAMPLE "Build example" ON)
+set(COMMON_INCLUDE_DIRS
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/buffer
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/log
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/ssl
+    PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
+    PRIVATE ${libev_INCLUDES}
+    PRIVATE ${spdlog_INCLUDES} 
+    PRIVATE ${OpenSSL_INCLUDES}
+)
+target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDE_DIRS})
 
-if(BUILD_STATIC)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-endif()
+target_link_libraries(
+    ${PROJECT_NAME}
+    libev::libev 
+    spdlog::spdlog
+    OpenSSL::OpenSSL 
+)
 
-find_package(Libev REQUIRED)
+# usage: add_test(test_xxx, src0, src1, ...)
+macro(add_test name)
+    set(sources ${ARGN})
+    set(prefixed_sources)
+    # 遍历每个源文件，并添加前缀路径
+    foreach(source IN LISTS sources)
+        list(APPEND prefixed_sources "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+    endforeach()
+    message(STATUS "add_test(${name} ${prefixed_sources})")
 
-add_subdirectory(src/ssl)
+    add_executable(${name} ${prefixed_sources})
+    target_include_directories(${name} PRIVATE ${COMMON_INCLUDE_DIRS})
+    target_link_libraries(
+        ${name}
+        ${PROJECT_NAME}
+        GTest::gtest
+        GTest::gtest_main
+        spdlog::spdlog
+    )
+    #gtest_discover_tests(${name})
+endmacro()
 
-add_subdirectory(src)
-
-if(BUILD_EXAMPLE)
-    add_subdirectory(example)
+if(BUILD_TESTS)
+    find_package(GTest REQUIRED)
+    include(GoogleTest)
+    add_test(example example/example.c)
 endif()
