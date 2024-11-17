@@ -25,7 +25,6 @@ class LibuwscConan(ConanFile):
         self.copy("*.h", dst="include", src="src/buffer")
         self.copy("*.h", dst="include", src="src/log")
         self.copy("*.h", dst="include", src="src/ssl")
-        self.copy("config.h", dst="include", keep_path=False)
         self.copy("*hello.lib", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
         self.copy("*.so", dst="lib", keep_path=False)

@@ -129,6 +129,8 @@ struct uwsc_client *uwsc_new(struct ev_loop *loop, const char *url,
 int uwsc_init(struct uwsc_client *cl, struct ev_loop *loop, const char *url,
     int ping_interval, const char *extra_header);
 
+void uwsc_get_version(int* major, int* minor, int* patch);
+
 //void uwsc_start(struct uwsc_client *cl);
 void uwsc_stop(struct uwsc_client *cl);
 

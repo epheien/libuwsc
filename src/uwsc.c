@@ -35,6 +35,7 @@
 #include "sha1.h"
 #include "utils.h"
 #include "log.h"
+#include "config.h"
 
 #ifdef SSL_SUPPORT
 #include "ssl/ssl.h"
@@ -67,6 +68,15 @@ static void uwsc_free(struct uwsc_client *cl)
 
 void uwsc_stop(struct uwsc_client *cl) {
     uwsc_free(cl);
+}
+
+void uwsc_get_version(int* major, int* minor, int* patch) {
+    if (major)
+        *major = UWSC_VERSION_MAJOR;
+    if (minor)
+        *minor = UWSC_VERSION_MINOR;
+    if (patch)
+        *patch = UWSC_VERSION_PATCH;
 }
 
 static inline void uwsc_error(struct uwsc_client *cl, int err, const char *msg)
