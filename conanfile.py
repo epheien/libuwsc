@@ -17,8 +17,17 @@ class LibuwscConan(ConanFile):
         self.requires("spdlog/1.14.1")
         self.requires("gtest/1.15.0")
 
+    def build(self):
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
+
     def package(self):
         self.copy("*.h", dst="include", src="include")
+        self.copy("*.h", dst="include", src="src/buffer")
+        self.copy("*.h", dst="include", src="src/log")
+        self.copy("*.h", dst="include", src="src/ssl")
+        self.copy("config.h", dst="include", keep_path=False)
         self.copy("*hello.lib", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
         self.copy("*.so", dst="lib", keep_path=False)
@@ -26,4 +35,4 @@ class LibuwscConan(ConanFile):
         self.copy("*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["libuwsc"]
+        self.cpp_info.libs = ["uwsc"]
