@@ -14,8 +14,6 @@ class LibuwscConan(ConanFile):
     def requirements(self):
         self.requires("libev/4.33")
         self.requires("openssl/1.1.1w")
-        self.requires("spdlog/1.14.1")
-        self.requires("gtest/1.15.0")
 
     def build(self):
         cmake = CMake(self)

@@ -24,7 +24,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in ${CMAKE_CURRENT_BINAR
 
 find_package(libev REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(spdlog REQUIRED)
 
 project(uwsc)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src SRCS)
@@ -43,7 +42,6 @@ set(COMMON_INCLUDE_DIRS
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/ssl
     PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
     PRIVATE ${libev_INCLUDES}
-    PRIVATE ${spdlog_INCLUDES} 
     PRIVATE ${OpenSSL_INCLUDES}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDE_DIRS})
@@ -51,7 +49,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDE_DIRS})
 target_link_libraries(
     ${PROJECT_NAME}
     libev::libev 
-    spdlog::spdlog
     OpenSSL::OpenSSL 
 )
 
@@ -70,15 +67,9 @@ macro(add_test name)
     target_link_libraries(
         ${name}
         ${PROJECT_NAME}
-        GTest::gtest
-        GTest::gtest_main
-        spdlog::spdlog
     )
-    #gtest_discover_tests(${name})
 endmacro()
 
 if(BUILD_TESTS)
-    find_package(GTest REQUIRED)
-    include(GoogleTest)
     add_test(example example/example.c)
 endif()
