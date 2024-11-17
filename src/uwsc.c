@@ -34,7 +34,6 @@
 #include "uwsc.h"
 #include "sha1.h"
 #include "utils.h"
-#include "log.h"
 #include "config.h"
 
 #ifdef SSL_SUPPORT
@@ -44,6 +43,11 @@
 #ifdef SSL_SUPPORT
 static struct ssl_context *ssl_ctx;
 #endif
+
+#define log_debug(fmt...)     printf(fmt)
+#define log_info(fmt...)      printf(fmt)
+#define log_warn(fmt...)      printf(fmt)
+#define log_err(fmt...)       printf(fmt)
 
 static void uwsc_free(struct uwsc_client *cl)
 {

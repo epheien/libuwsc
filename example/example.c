@@ -28,8 +28,10 @@
 #include <unistd.h>
 
 #include "uwsc.h"
-#include "log.h"
 #include "config.h"
+
+#define log_info(fmt...)      printf(fmt)
+#define log_err(fmt...)       printf(fmt)
 
 static void stdin_read_cb(struct ev_loop *loop, struct ev_io *w, int revents)
 {
@@ -137,7 +139,7 @@ int main(int argc, char **argv)
             ping_interval = atoi(optarg);
             break;
         case 'd':
-            set_log_level(LOG_DEBUG);
+            //set_log_level(LOG_DEBUG);
             break;
         default: /* '?' */
             usage(argv[0]);

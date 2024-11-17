@@ -31,7 +31,6 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#include "log.h"
 #include "utils.h"
 
 int get_nonce(uint8_t *dest, int len)
