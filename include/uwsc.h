@@ -129,6 +129,9 @@ struct uwsc_client *uwsc_new(struct ev_loop *loop, const char *url,
 int uwsc_init(struct uwsc_client *cl, struct ev_loop *loop, const char *url,
     int ping_interval, const char *extra_header);
 
+//void uwsc_start(struct uwsc_client *cl);
+void uwsc_stop(struct uwsc_client *cl);
+
 #if 0
 #ifdef SSL_SUPPORT
 int uwsc_load_ca_crt_file(const char *file);

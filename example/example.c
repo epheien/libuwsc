@@ -162,6 +162,7 @@ int main(int argc, char **argv)
 
     ev_run(loop, 0);
 
+    uwsc_stop(cl);
     free(cl);
     
     return 0;

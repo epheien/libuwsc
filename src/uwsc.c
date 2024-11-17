@@ -50,14 +50,23 @@ static void uwsc_free(struct uwsc_client *cl)
     ev_io_stop(cl->loop, &cl->ior);
     ev_io_stop(cl->loop, &cl->iow);
     buffer_free(&cl->rb);
+    memset(&cl->rb, 0, sizeof(cl->rb));
     buffer_free(&cl->wb);
+    memset(&cl->wb, 0, sizeof(cl->wb));
 
 #ifdef SSL_SUPPORT
     ssl_session_free(cl->ssl);
+    cl->ssl = NULL;
 #endif
 
-    if (cl->sock > 0)
+    if (cl->sock > 0) {
         close(cl->sock);
+        cl->sock = 0;
+    }
+}
+
+void uwsc_stop(struct uwsc_client *cl) {
+    uwsc_free(cl);
 }
 
 static inline void uwsc_error(struct uwsc_client *cl, int err, const char *msg)
