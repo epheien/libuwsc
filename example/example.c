@@ -135,7 +135,7 @@ int main(int argc, char **argv)
             ping_interval = atoi(optarg);
             break;
         case 'd':
-            log_level(LOG_DEBUG);
+            set_log_level(LOG_DEBUG);
             break;
         default: /* '?' */
             usage(argv[0]);
