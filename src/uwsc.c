@@ -34,6 +34,7 @@
 #include "uwsc.h"
 #include "sha1.h"
 #include "utils.h"
+#include "log.h"
 
 #ifdef SSL_SUPPORT
 #include "ssl/ssl.h"

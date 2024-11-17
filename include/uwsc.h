@@ -27,8 +27,6 @@
 
 #include <ev.h>
 
-#include "log.h"
-#include "config.h"
 #include "buffer.h"
 
 #define UWSC_MAX_CONNECT_TIME       5  /* second */
